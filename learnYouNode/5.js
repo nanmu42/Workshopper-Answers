@@ -20,8 +20,8 @@ const path = require('path');
 
 // 存放读取并且过滤后的文件列表
 let fileList = [];
-let dirPath = process.argv[2];
-let ext = process.argv[3];
+let dirPath = process.argv[ 2 ];
+let ext = process.argv[ 3 ];
 
 if (!dirPath || !ext) {
   console.error('输入的路径或扩展名有误：', dirPath, ext);
