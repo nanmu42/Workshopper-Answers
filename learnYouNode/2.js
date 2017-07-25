@@ -8,6 +8,7 @@
 
 let array = process.argv;
 
+// 使用数组的reduce方法，这里给累加器acc以初值0
 let ans = array.reduce((acc, cur) => {
   if (isFinite(cur)) {
     return +cur + acc;
