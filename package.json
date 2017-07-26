@@ -1,0 +1,29 @@
+{
+  "name": "workshopper-answers",
+  "version": "1.0.0",
+  "description": "Answers to a few NodeSchool Workshoppers lessons",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nanmu42/Workshopper-Answers.git"
+  },
+  "keywords": [
+    "NodeSchool",
+    "Workshopper",
+    "answer",
+    "answers",
+    "learnyounode"
+  ],
+  "author": "nanmu42",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nanmu42/Workshopper-Answers/issues"
+  },
+  "homepage": "https://github.com/nanmu42/Workshopper-Answers#readme",
+  "dependencies": {
+    "bl": "^1.2.1"
+  }
+}
