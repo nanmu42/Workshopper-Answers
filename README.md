@@ -5,9 +5,9 @@
 本项目涵盖以下Workshopper题目的参考答案：
 
 * [learnYouNode](https://github.com/nanmu42/Workshopper-Answers/tree/master/learnYouNode)
-* stream-adventure (进行中)
+* stream-adventure （进行中）
 * Functional Javascript Workshop （计划中）
-* test-anything (计划中)
+* test-anything  （计划中）
 
 # 项目依赖
 
