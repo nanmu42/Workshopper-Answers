@@ -1,2 +1,5 @@
+*.js
+
 .idea/
 /node_modules/
+!/learnYouNode/*.js
