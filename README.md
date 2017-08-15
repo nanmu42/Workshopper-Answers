@@ -1,5 +1,7 @@
 # Workshopper Answers
 
+![NodeSchool](https://github.com/nanmu42/Workshopper-Answers/raw/master/NodeSchool.png)
+
 本项目涵盖以下Workshopper题目的参考答案：
 
 * [learnYouNode](https://github.com/nanmu42/Workshopper-Answers/tree/master/learnYouNode)
