@@ -104,12 +104,12 @@ export class OddLowerEvenUpper extends stream.Transform {
  * 以console.warn()输出流经管道的内容
  * */
 export class Print extends stream.Transform {
-  constructor(options?: TransformOptions) {
+  constructor(protected _tag: string = 'Print: ', options?: TransformOptions) {
     super(options);
   }
 
   public _transform(chunk: Buffer | string | any, encoding: string, next: Function) {
-    console.warn('Print: ', chunk.toString());
+    console.warn(this._tag, chunk.toString());
     next(null, chunk);
   }
 }
@@ -142,5 +142,72 @@ export class Concat extends stream.Transform {
       this.push(this._temp);
       end(null);
     }
+  }
+}
+
+/**
+ * 将输入流和输出流合成为一个双工流
+ * @param readable 可读流
+ * @param writable 可写流
+ * */
+export class Duplexer extends stream.Duplex {
+  constructor(protected _readableStream: stream.Readable,
+              protected _writableStream: stream.Writable,
+              options?: TransformOptions) {
+    super(options);
+
+    // 可读流
+    this._readableStream.on('data', (chunk) => {
+      if (!this.push(chunk)) {
+        this._readableStream.pause();
+      }
+    });
+    this._readableStream.on('end', () => {
+      this.push(null);
+    });
+
+    // 可写流 node v8.0.0之前
+    if (+process.version[1] < 8) {
+      this.on('finish', () => {
+        process.nextTick(() => {
+          this._writableStream.end();
+        })
+      });
+    }
+
+    // 抛出底层的错误
+    this._readableStream.on('error', (err) => {
+      this.emit('error', err);
+    });
+    this._writableStream.on('error', (err) => {
+      this.emit('error', err);
+    });
+  }
+
+
+  // 需要读取时
+  public _read() {
+    this._readableStream.isPaused() && this._readableStream.resume();
+  }
+
+  // 需要写入时
+  public _write(chunk: Buffer | string | any, encoding: string, next: Function) {
+    if (!this._writableStream.write(chunk, encoding)) {
+      this._writableStream.once('drain', () => {
+        next(null)
+      });
+    } else {
+      process.nextTick(() => {
+        next(null)
+      });
+    }
+  }
+
+  /* Added in: v8.0.0，node版本不够时侦听finish事件代替*/
+  public _final(end: Function) {
+    process.nextTick(() => {
+      this._writableStream.end();
+      end(null);
+    })
   }
 }
