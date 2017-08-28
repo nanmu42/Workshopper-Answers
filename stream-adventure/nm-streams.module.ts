@@ -203,11 +203,14 @@ export class Duplexer extends stream.Duplex {
     }
   }
 
-  /* Added in: v8.0.0，node版本不够时侦听finish事件代替*/
+  /* Added in: v8.0.0，node版本不够时侦听finish事件代替，
+  * 但是实现方式响应的没有下面这么稳妥。*/
   public _final(end: Function) {
     process.nextTick(() => {
       this._writableStream.end();
-      end(null);
+      this._writableStream.once('finish', ()=>{
+        end(null);
+      });
     })
   }
 }
