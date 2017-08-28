@@ -35,8 +35,8 @@ class input extends Writable {
               options?: WritableOptions) {
     super(options);
 
-    if (+process.version[1] < 8) {
-      this.on('finish', ()=>{
+    if (+process.version[ 1 ] < 8) {
+      this.on('finish', () => {
         console.warn('count from finish event:', this._counts);
         if (this._finalCallback) {
           this._cbContent ? this._finalCallback.call(this._cbContent, this._counts) : this._finalCallback(this._counts);
@@ -49,7 +49,7 @@ class input extends Writable {
 
   public _write(chunk: Buffer | string | any, encoding: string, next: Function) {
     console.warn('input: ', chunk);
-    this._counts[chunk['country']] = (this._counts[chunk['country']] || 0) + 1;
+    this._counts[ chunk[ 'country' ] ] = (this._counts[ chunk[ 'country' ] ] || 0) + 1;
     next(null);
   }
 

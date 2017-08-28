@@ -41,10 +41,10 @@ export class LowerCaser extends stream.Transform {
 }
 
 /**
- * 以指定符号为输出单位缓冲字符串，输出时包含指定符号
+ * 以指定符号（单个字符）为输出单位缓冲字符串，输出时包含指定符号
  * */
 export class Split extends stream.Transform {
-  constructor(protected _symbol: string, options?: TransformOptions) {
+  constructor(protected _symbol: string, protected _outputTail: boolean = false, options?: TransformOptions) {
     super(options);
   }
 
@@ -65,7 +65,12 @@ export class Split extends stream.Transform {
 
   public _flush(end: Function) {
     if (this._temp.length > 0) {
-      console.warn('部分数据因为缺少输出单位而没有输出：', this._temp);
+      if (this._outputTail) {
+        this.push(this._temp);
+        console.warn('输出尾部：', this._temp);
+      } else {
+        console.warn('部分数据因为缺少输出单位而没有输出：', this._temp);
+      }
     }
     end(null);
   }
@@ -84,7 +89,7 @@ export class OddLowerEvenUpper extends stream.Transform {
   public _transform(chunk: Buffer | string | any, encoding: string, next: Function) {
     let input: Array<String> = chunk.toString().split(/[\n\r]/);
     for (let i = 0, len = input.length; i < len; i++) {
-      let line = input[i];
+      let line = input[ i ];
       if (!line && i === len - 1) {
         break;
       }
@@ -167,7 +172,7 @@ export class Duplexer extends stream.Duplex {
     });
 
     // 可写流 node v8.0.0之前
-    if (+process.version[1] < 8) {
+    if (+process.version[ 1 ] < 8) {
       this.on('finish', () => {
         process.nextTick(() => {
           this._writableStream.end();
@@ -204,13 +209,55 @@ export class Duplexer extends stream.Duplex {
   }
 
   /* Added in: v8.0.0，node版本不够时侦听finish事件代替，
-  * 但是实现方式响应的没有下面这么稳妥。*/
+  * 但是实现方式相应地没有下面这么稳妥。*/
   public _final(end: Function) {
     process.nextTick(() => {
       this._writableStream.end();
-      this._writableStream.once('finish', ()=>{
+      this._writableStream.once('finish', () => {
         end(null);
       });
     })
   }
+}
+
+/**
+ * 将几个转换流（双工流）按给定次序pipe到一起，返回这个新流
+ * @param streams 要合并的双工流，按先后次序排列
+ * @param [options] 双工流选项
+ * */
+export function combine(streams: Array<stream.Transform | stream.Duplex>, options?: stream.DuplexOptions) {
+
+  function onError(this:stream.Transform, err: Error) {
+    this.emit('error', err);
+  }
+
+  if (Object.prototype.toString.call(streams) !== '[object Array]') {
+    throw new TypeError('Input is expected to be an Array.');
+  }
+  if (streams.length === 0) {
+    throw new TypeError('Array should contain 1 Transform/Duplex at least.');
+  }
+  if (streams.length === 1) {
+    return streams[ 0 ];
+  }
+  let len = streams.length;
+  let first = streams[ 0 ];
+  let last = streams[ len - 1 ];
+  let pipeLine = new Duplexer(last, first, options);
+
+  for (let i = 0; i + 1 <= len - 1; i++) {
+    let now = streams[ i ];
+    let next = streams[ i + 1 ];
+
+    now.pipe(next);
+
+    // 处理从第二个到倒数第二个的错误
+    if (i !== 0) {
+      now.on('error', (err)=>{
+        onError.call(now, err);
+      });
+    }
+  }
+
+  return pipeLine;
 }

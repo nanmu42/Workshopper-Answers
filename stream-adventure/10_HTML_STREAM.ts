@@ -38,7 +38,7 @@ class Louder extends stream.Transform {
     /* 到这里本来已经结束了，但是测试程序使用的是全字符串匹配，所以需要调整一下回车符 (⊙﹏⊙)b */
     /* 好膜力的测试文字…… */
     let arr = this._temp.split('><');
-    this._temp = arr[0] + '>\n  <' + arr[1] + '>\n<' + arr[2];
+    this._temp = arr[ 0 ] + '>\n  <' + arr[ 1 ] + '>\n<' + arr[ 2 ];
     this._temp = this._temp.replace(/\n\n/, '') + '\n';
     console.warn('调整后：', this._temp);
 
