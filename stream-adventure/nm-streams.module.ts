@@ -227,7 +227,7 @@ export class Duplexer extends stream.Duplex {
  * */
 export function combine(streams: Array<stream.Transform | stream.Duplex>, options?: stream.DuplexOptions) {
 
-  function onError(this:stream.Transform, err: Error) {
+  function onError(this: stream.Transform, err: Error) {
     this.emit('error', err);
   }
 
@@ -253,11 +253,37 @@ export function combine(streams: Array<stream.Transform | stream.Duplex>, option
 
     // 处理从第二个到倒数第二个的错误
     if (i !== 0) {
-      now.on('error', (err)=>{
+      now.on('error', (err) => {
         onError.call(now, err);
       });
     }
   }
 
   return pipeLine;
+}
+
+/**
+ * 装饰一个流，在其之前或之后添加内容，可替代正向的Concat
+ * @param [_before] 之前内容，默认为空
+ * @param [_after] 之后内容，默认为空
+ * */
+export class Decorator extends stream.Transform {
+  constructor(protected _before: string = '', protected _after: string = '', options?: TransformOptions) {
+    super(options);
+  }
+
+  // 暂存所有数据直到end标识
+  protected _temp: string = '';
+
+  // 接收所有数据
+  public _transform(chunk: Buffer | string | any, encoding: string, next: Function) {
+    this._temp += chunk.toString();
+    next(null);
+  }
+
+  // end标识出现，输出所有数据
+  public _flush(end: Function) {
+   this.push(this._before + this._temp + this._after);
+   end(null);
+  }
 }

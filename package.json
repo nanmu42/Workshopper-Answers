@@ -25,7 +25,8 @@
   "homepage": "https://github.com/nanmu42/Workshopper-Answers#readme",
   "dependencies": {
     "bl": "^1.2.1",
-    "cheerio": "^1.0.0-rc.2"
+    "cheerio": "^1.0.0-rc.2",
+    "tar-stream": "^1.5.4"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.2",
