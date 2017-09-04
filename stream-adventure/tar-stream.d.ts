@@ -1,5 +1,6 @@
 /**
  * 定义了部分tar-stream包的内容
+ * @link https://www.npmjs.com/package/tar-stream
  * */
 
 declare module 'tar-stream' {

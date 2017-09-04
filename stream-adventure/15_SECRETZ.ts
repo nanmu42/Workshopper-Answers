@@ -36,7 +36,7 @@ function specialExtract() {
       next();
       return -1;
     }
-    
+
     reading
       .pipe(createHash('md5', { encoding: 'hex' }))
       .pipe(new Decorator('', ' ' + header.name + '\n'))
