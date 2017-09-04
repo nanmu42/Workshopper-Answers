@@ -1,6 +1,8 @@
 *.js
 Thumbs.db
 
-.idea/
+/.idea/
 /node_modules/
+
 !/learnYouNode/*.js
+!/test-anything/*.js
