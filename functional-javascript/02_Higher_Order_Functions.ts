@@ -5,10 +5,10 @@
  * then executes the passed in function num times.
  * */
 
-function repeat(operation: () => void, num: number) {
+function repeat1(operation: () => void, num: number) {
   while (num-- > 0) {
     operation();
   }
 }
 
-module.exports = repeat;
+module.exports = repeat1;
